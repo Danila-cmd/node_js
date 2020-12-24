@@ -6,8 +6,6 @@ router.get('/', async (req, res) => {
     const courses = await Course.find().lean()
         .populate('userId', 'email name')
 
-    console.log(courses)
-
     res.render('courses', {
         title: 'Курсы',
         isCourses: true,
