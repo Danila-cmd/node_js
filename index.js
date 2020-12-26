@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
 const exphbs = require('express-handlebars')
+const csrf = require('csurf')
 const session = require('express-session')
 const MongoStore = require('connect-mongodb-session')(session)
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access')
@@ -46,6 +47,7 @@ app.use(session({
     saveUninitialized: false,
     store
 }))
+app.use(csrf())
 
 //MIDDLEWARE FOR SESSION
 app.use(varMiddleware)

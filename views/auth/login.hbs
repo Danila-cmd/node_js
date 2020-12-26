@@ -23,6 +23,8 @@
                     <span class="helper-text" data-error="Введите пароль"></span>
                 </div>
 
+                <input type="hidden" name="_csrf" value="{{csrf}}">
+
                 <button class="btn btn-primary" type="submit">Войти</button>
             </form>
 
@@ -32,12 +34,6 @@
             <form action="/auth/register" method="post">
 
                 <h1>Создать аккаунт</h1>
-
-                <div class="input-field">
-                    <input id="name" name="name" type="text" class="validate" required>
-                    <label for="name">Имя</label>
-                    <span class="helper-text" data-error="Введите имя"></span>
-                </div>
 
                 <div class="input-field">
                     <input id="remail" name="email" type="text" class="validate" required>
@@ -52,10 +48,18 @@
                 </div>
 
                 <div class="input-field">
-                    <input id="confirm" name="password" type="password" class="validate" required>
+                    <input id="confirm" name="repeat" type="password" class="validate" required>
                     <label for="confirm">Повторите пароль</label>
                     <span class="helper-text" data-error="Введите пароль"></span>
                 </div>
+
+                <div class="input-field">
+                    <input id="name" name="name" type="text" class="validate" required>
+                    <label for="name">Ваше имя</label>
+                    <span class="helper-text" data-error="Введите имя"></span>
+                </div>
+
+                <input type="hidden" name="_csrf" value="{{csrf}}">
 
                 <button class="btn btn-primary" type="submit">Зарегистрироваться</button>
 
