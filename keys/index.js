@@ -1,4 +1,4 @@
 module.exports = {
-    MONGODB_URI: 'mongodb+srv://danila:VDVAu0QKaBhpcjFk@cluster0.irdqj.mongodb.net/shop?retryWrites=true&w=majority',
+    MONGODB_URI: '****',
     SESSION_SECRET: 'some secret value'
 }
