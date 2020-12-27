@@ -6,7 +6,9 @@ const bcrypt = require('bcryptjs')
 router.get('/login', async (req, res) => {
     res.render('auth/login', {
         title: 'Авторизация',
-        isLogin: true
+        isLogin: true,
+        loginError: req.flash('loginError'),
+        registerError: req.flash('registerError')
     })
 })
 
@@ -29,9 +31,11 @@ router.post('/login', async (req, res) => {
                 })
 
             } else {
+                req.flash('loginError', 'Введен не правильно пароль')
                 res.redirect('/auth/login#login')
             }
         } else {
+            req.flash('loginError', 'Такого пользователя не существует')
             res.redirect('/auth/login#login')
         }
 
@@ -55,6 +59,7 @@ router.post('/register', async (req, res) => {
         const candidate = await User.findOne({email})
 
         if (candidate) {
+            req.flash('registerError', 'Пользователь с таким email уже существует')
             res.redirect('/auth/login#register')
         } else {
             const hashPassword = await bcrypt.hash(password, 10)

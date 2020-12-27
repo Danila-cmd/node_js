@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const exphbs = require('express-handlebars')
 const csrf = require('csurf')
+const flash = require('connect-flash')
 const session = require('express-session')
 const MongoStore = require('connect-mongodb-session')(session)
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access')
@@ -12,12 +13,11 @@ const cardRoutes = require('./routes/card')
 const ordersRoutes = require('./routes/orders')
 const authRoutes = require('./routes/auth')
 const mongoose = require('mongoose')
-const User = require('./models/user')
 const Handlebars = require('handlebars')
 const varMiddleware = require('./middleware/variables')
 const userMiddleware = require('./middleware/user')
 
-const MONGODB_URI = `****`
+const keys = require('./keys/index')
 
 const app = express()
 
@@ -28,7 +28,7 @@ const hbs = exphbs.create({
 })
 
 const store = new MongoStore({
-    uri: MONGODB_URI,
+    uri: keys.MONGODB_URI,
     collection: 'sessions',
 
 })
@@ -42,13 +42,13 @@ app.use(express.urlencoded({extended: true}))
 
 //SESSION
 app.use(session({
-    secret: 'some secret value',
+    secret: keys.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store
 }))
 app.use(csrf())
-
+app.use(flash())
 //MIDDLEWARE FOR SESSION
 app.use(varMiddleware)
 
@@ -65,7 +65,7 @@ const PORT = process.env.PORT || 3000
 
 async function start() {
     try {
-        await mongoose.connect(MONGODB_URI, {
+        await mongoose.connect(keys.MONGODB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false
