@@ -2,15 +2,14 @@ const {Router} = require('express')
 const User = require('../models/user')
 const nodemailer = require('nodemailer')
 const sendgrid = require('nodemailer-sendgrid-transport')
-const mailchimp = require('mailchimp-api-v3')
 const keys = require('../keys/index')
 const regEmail = require('../emails/registration')
 const resetEmail = require('../emails/reset')
 const router = Router()
 const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
-const {validationResult} = require('express-validator/check')
-const {registerValidators} = require('../utils/validators')
+const {validationResult} = require('express-validator')
+const {registerValidators, loginValidators} = require('../utils/validators')
 
 const transporter = nodemailer.createTransport(sendgrid({
     auth: {api_key: keys.SENDGRID_API_KEY}
@@ -25,37 +24,47 @@ router.get('/login', async (req, res) => {
     })
 })
 
-router.post('/login', async (req, res) => {
-    try {
-        const {email, password} = req.body
-        const candidate = await User.findOne({email})
+router.post('/login',
+    loginValidators,
+    async (req, res) => {
+        try {
+            const {email, password} = req.body
 
-        if (candidate) {
-            const isSame = await bcrypt.compare(password, candidate.password)
-            if (isSame) {
+            const errors = validationResult(req)
 
-                req.session.user = candidate
-                req.session.isAuthenticated = true
-                req.session.save(err => {
-                    if (err) {
-                        throw err
-                    }
-                    res.redirect('/')
-                })
+            if (!errors.isEmpty()){
+                req.flash('loginError', errors.array()[0].msg)
+                return res.status(422).redirect('/auth/login#login')
+            }
 
+            const candidate = await User.findOne({email})
+
+            if (candidate) {
+                const isSame = await bcrypt.compare(password, candidate.password)
+                if (isSame) {
+
+                    req.session.user = candidate
+                    req.session.isAuthenticated = true
+                    req.session.save(err => {
+                        if (err) {
+                            throw err
+                        }
+                        res.redirect('/')
+                    })
+
+                } else {
+                    req.flash('loginError', 'Введен не правильно пароль')
+                    res.redirect('/auth/login#login')
+                }
             } else {
-                req.flash('loginError', 'Введен не правильно пароль')
+                req.flash('loginError', 'Такого пользователя не существует')
                 res.redirect('/auth/login#login')
             }
-        } else {
-            req.flash('loginError', 'Такого пользователя не существует')
-            res.redirect('/auth/login#login')
-        }
 
-    } catch (e) {
-        console.log(e)
-    }
-})
+        } catch (e) {
+            console.log(e)
+        }
+    })
 
 router.get('/logout', async (req, res) => {
     req.session.destroy(() => {
@@ -65,8 +74,7 @@ router.get('/logout', async (req, res) => {
 })
 
 router.post('/register',
-    registerValidators
-    ,
+    registerValidators,
     async (req, res) => {
 
         try {
