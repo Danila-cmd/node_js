@@ -37,7 +37,7 @@ exports.loginValidators = [
         .withMessage('Введите корректный email')
         .normalizeEmail(),
     body('password', 'Пароль должен быть более 6 символов')
-        .isLength({min: 6, max: 56})
+        .isLength({min: 5, max: 56})
         .isAlphanumeric()
 ]
 
