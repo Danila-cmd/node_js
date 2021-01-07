@@ -1,4 +1,5 @@
-/node_modules
 .idea
+/node_modules
+keys/keys.dev.js
 
 .package-lock.json

@@ -3,6 +3,8 @@ const path = require('path')
 const exphbs = require('express-handlebars')
 const csrf = require('csurf')
 const flash = require('connect-flash')
+const helmet = require('helmet')
+const compression = require('compression')
 const session = require('express-session')
 const MongoStore = require('connect-mongodb-session')(session)
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access')
@@ -55,6 +57,8 @@ app.use(session({
 app.use(fileMiddleware.single('avatar'))
 app.use(csrf())
 app.use(flash())
+
+app.use(compression())
 //MIDDLEWARE FOR SESSION
 app.use(varMiddleware)
 
